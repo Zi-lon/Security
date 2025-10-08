@@ -5,9 +5,11 @@ class Program
 {
     static void Main(string[] args)
     {
+        // even de int naar biginteger verzetten
+        // vervolgens de ceiling en sqrt een eigen functie maken
         BigInteger p = BigInteger.Parse(Console.ReadLine()); // modulus
         BigInteger g = BigInteger.Parse(Console.ReadLine()); // grondtal
-        int q = int.Parse(Console.ReadLine()); // orde
+        int q = int.Parse(Console.ReadLine());              // orde
         BigInteger k = BigInteger.Parse(Console.ReadLine()); // k-getallen x_1 t/m x_k
 
         for (int i = 0; i < k; i++)
@@ -15,7 +17,6 @@ class Program
             Console.WriteLine("\n");
             BigInteger x = BigInteger.Parse(Console.ReadLine());
             Dictionary<BigInteger, BigInteger> giant = giantStep(p, g, q);
-            // Dictionary<BigInteger, BigInteger> small = babyStep(p, x, g, q);
             if (babyStep(p, x, g, q, giant, out BigInteger log))
                 {
                     Console.WriteLine(log);
@@ -26,11 +27,10 @@ class Program
                 }
         }
     }
-
     static Dictionary<BigInteger, BigInteger> giantStep(BigInteger modulus, BigInteger grondgetal, int orde)
     {
         Dictionary<BigInteger, BigInteger> table = new Dictionary<BigInteger, BigInteger>();
-        int steps = (int)Math.Ceiling(Math.Sqrt(orde));
+        int steps = (int)Math.Ceiling(Math.Sqrt(orde)); // deze nog aan te passen 
         for (int j = 0; j < steps; j++)
         {
             BigInteger exp = steps * j;
@@ -58,15 +58,4 @@ class Program
         }
         return false;
     }
-    
-            // if (giant.ContainsKey(val))
-            // {
-            //     BigInteger l = giant[val];
-            //     BigInteger eind = l * steps - j;
-            //     Console.WriteLine(eind.ToString());
-            // }
-            // else
-            // {
-            //     Console.WriteLine("geen macht");
-            // }
 }
