@@ -1,37 +1,44 @@
-using System;
 using System.Numerics;
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        // even de int naar biginteger verzetten
-        // vervolgens de ceiling en sqrt een eigen functie maken
         BigInteger p = BigInteger.Parse(Console.ReadLine()); // modulus
         BigInteger g = BigInteger.Parse(Console.ReadLine()); // grondtal
-        int q = int.Parse(Console.ReadLine());              // orde
+        BigInteger q = BigInteger.Parse(Console.ReadLine()); // orde
         BigInteger k = BigInteger.Parse(Console.ReadLine()); // k-getallen x_1 t/m x_k
+
+        List<BigInteger> getallen = new List<BigInteger>();
 
         for (int i = 0; i < k; i++)
         {
-            Console.WriteLine("\n");
             BigInteger x = BigInteger.Parse(Console.ReadLine());
+            getallen.Add(x);
+        }
+
+        Console.WriteLine("\nAntwoorden:");
+
+        foreach (BigInteger getal in getallen)
+        {
             Dictionary<BigInteger, BigInteger> giant = giantStep(p, g, q);
-            if (babyStep(p, x, g, q, giant, out BigInteger log))
-                {
-                    Console.WriteLine(log);
-                }
+            if (babyStep(p, getal, g, q, giant, out BigInteger antwoord))
+            {
+                Console.WriteLine(antwoord);
+            }
             else
-                {
-                    Console.WriteLine("geen macht");
-                }
+            {
+                Console.WriteLine("geen macht");
+            }
         }
     }
-    static Dictionary<BigInteger, BigInteger> giantStep(BigInteger modulus, BigInteger grondgetal, int orde)
+    static Dictionary<BigInteger, BigInteger> giantStep(BigInteger modulus, BigInteger grondgetal, BigInteger orde)
     {
         Dictionary<BigInteger, BigInteger> table = new Dictionary<BigInteger, BigInteger>();
-        int steps = (int)Math.Ceiling(Math.Sqrt(orde)); // deze nog aan te passen 
-        for (int j = 0; j < steps; j++)
+
+        BigInteger steps = perfecteWortel(orde) ? Sqrt(orde) : Sqrt(orde) + 1;
+
+        for (BigInteger j = 0; j < steps; j++)
         {
             BigInteger exp = steps * j;
             BigInteger res = BigInteger.ModPow(grondgetal, exp, modulus);
@@ -40,22 +47,52 @@ class Program
         return table;
     }
 
-    static bool babyStep(BigInteger modulus, BigInteger x, BigInteger grondgetal, int orde, Dictionary<BigInteger, BigInteger> giantdic, out BigInteger answer)
+    static bool babyStep(BigInteger modulus, BigInteger x, BigInteger grondgetal, BigInteger orde, Dictionary<BigInteger, BigInteger> giantdic, out BigInteger antwoord)
     {
         Dictionary<BigInteger, BigInteger> table = new Dictionary<BigInteger, BigInteger>();
-        int steps = (int)Math.Ceiling(Math.Sqrt(orde));
-        answer = -1;
-        for (int j = 0; j < steps; j++)
+
+        BigInteger steps = perfecteWortel(orde) ? Sqrt(orde) : Sqrt(orde) + 1;
+
+        antwoord = BigInteger.MinusOne;
+        for (BigInteger j = 0; j < steps; j++)
         {
             BigInteger val = BigInteger.ModPow(grondgetal, j, modulus) * x % modulus;
             table.Add(j, val);
 
             if (giantdic.TryGetValue(val, out BigInteger l))
             {
-                answer = l * steps - j;
+                antwoord = l * steps - j;
                 return true;
             }
         }
         return false;
+    }
+
+    static bool perfecteWortel(BigInteger value)
+    {
+        BigInteger a = Sqrt(value);
+        return a * a == value;
+    }
+
+    static BigInteger Sqrt(BigInteger value)
+    {
+        if (value < 0)
+            throw new ArgumentException("min kan niet");
+        
+        if (value == 0)
+            return 0;
+        
+        if (value < 4)
+            return 1;
+        
+        BigInteger x = value;
+        BigInteger y = (value + 1) / 2;
+        
+        while (y < x)
+        {
+            x = y;
+            y = (x + value / x) / 2;
+        }
+        return x;
     }
 }
